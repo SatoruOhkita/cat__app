@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import styles from "../styles/Home.module.css";
 import "semantic-ui-css/semantic.min.css"; //セマンティックUIをインポート
+import { Loader } from "semantic-ui-react";
 
 // 受け取るデータの型を決めていく
 interface SearchCatImage {
@@ -29,11 +30,16 @@ export default function Home() {
   // 状態変数で，クリックした時のURLを保持
   const [catImageUrl, setCatImageUrl] = useState("");
 
+  // 状態変数で，ローディング画面の初期状態をfalseにする
+  const [isLoading, setIsLoading] = useState(false);
+
   // handleClick関数の中で，『fetchCatImage』を呼び出す。
   const handleClick = async () => {
+    setIsLoading(true);
     const catImage = await fetchCatImage();
     console.log(catImage);
     setCatImageUrl(catImage.url);
+    setIsLoading(false);
   };
 
   return (
@@ -48,7 +54,12 @@ export default function Home() {
       }}
     >
       <h1>猫画像アプリ</h1>
-      <img src={catImageUrl} width={500} height="auto" />
+      {isLoading ? (
+        <Loader active />
+      ) : (
+        <img src={catImageUrl} width={500} height="auto" />
+      )}
+
       <button style={{ marginTop: 18 }} onClick={handleClick}>
         今日の猫さん
       </button>
