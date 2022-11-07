@@ -2,9 +2,17 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 
+// 受け取るデータの型を決めていく
+interface SearchCatImage {
+  id: string;
+  url: string;
+  width: number;
+  height: number;
+}
+
 export default function Home() {
   // APIをたたくための関数(非同期処理)
-  const fetchCatImage = async () => {
+  const fetchCatImage = async (): Promise<SearchCatImage> => {
     const res = await fetch("https://api.thecatapi.com/v1/images/search");
     const result = await res.json();
     // console.log(result[0]);
