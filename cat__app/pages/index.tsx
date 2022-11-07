@@ -1,7 +1,9 @@
+import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
 import styles from "../styles/Home.module.css";
+import "semantic-ui-css/semantic.min.css"; //セマンティックUIをインポート
 
 // 受け取るデータの型を決めていく
 interface SearchCatImage {
@@ -11,17 +13,21 @@ interface SearchCatImage {
   height: number;
 }
 
+interface IndexPageProps {
+  initialCatImageUrl: string;
+}
+
+// APIをたたくための関数(非同期処理)
+const fetchCatImage = async (): Promise<SearchCatImage> => {
+  const res = await fetch("https://api.thecatapi.com/v1/images/search");
+  const result = await res.json();
+  // console.log(result[0]);
+  return result[0];
+};
+
 export default function Home() {
   // 状態変数で，クリックした時のURLを保持
   const [catImageUrl, setCatImageUrl] = useState("");
-
-  // APIをたたくための関数(非同期処理)
-  const fetchCatImage = async (): Promise<SearchCatImage> => {
-    const res = await fetch("https://api.thecatapi.com/v1/images/search");
-    const result = await res.json();
-    // console.log(result[0]);
-    return result[0];
-  };
 
   // handleClick関数の中で，『fetchCatImage』を呼び出す。
   const handleClick = async () => {
@@ -49,3 +55,15 @@ export default function Home() {
     </div>
   );
 }
+
+// SSRを実装
+export const getServerSideProps: GetServerSideProps<
+  IndexPageProps
+> = async () => {
+  const catImageUrl = await fetchCatImage();
+  return {
+    props: {
+      initialCatImageUrl: catImageUrl.url,
+    },
+  };
+};
