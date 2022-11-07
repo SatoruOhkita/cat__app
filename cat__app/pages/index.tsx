@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
+import { useState } from "react";
 import styles from "../styles/Home.module.css";
 
 // 受け取るデータの型を決めていく
@@ -11,6 +12,9 @@ interface SearchCatImage {
 }
 
 export default function Home() {
+  // 状態変数で，クリックした時のURLを保持
+  const [catImageUrl, setCatImageUrl] = useState("");
+
   // APIをたたくための関数(非同期処理)
   const fetchCatImage = async (): Promise<SearchCatImage> => {
     const res = await fetch("https://api.thecatapi.com/v1/images/search");
@@ -23,6 +27,7 @@ export default function Home() {
   const handleClick = async () => {
     const catImage = await fetchCatImage();
     console.log(catImage);
+    setCatImageUrl(catImage.url);
   };
 
   return (
@@ -37,12 +42,8 @@ export default function Home() {
       }}
     >
       <h1>猫画像アプリ</h1>
-      <img
-        src="https://cdn2.thecatapi.com/images/MTgzMzAyOA.jpg"
-        width={500}
-        height="auto"
-      />
-      <button style={{ marginTop: "36" }} onClick={handleClick}>
+      <img src={catImageUrl} width={500} height="auto" />
+      <button style={{ marginTop: 18 }} onClick={handleClick}>
         今日の猫さん
       </button>
     </div>
